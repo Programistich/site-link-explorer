@@ -1,0 +1,245 @@
+{
+  "extName": {
+    "message": "Site Link Explorer"
+  },
+  "extDescription": {
+    "message": "Scannez et catégorisez les liens de sites web depuis sitemap.xml, robots.txt et d'autres sources publiques. Trouvez des pages cachées et des API instantanément."
+  },
+  "scanButton": {
+    "message": "Scanner les liens"
+  },
+  "scanResults": {
+    "message": "Résultats du scan"
+  },
+  "totalLinks": {
+    "message": "Total des liens"
+  },
+  "noLinksFound": {
+    "message": "Aucun lien trouvé sur cette page."
+  },
+  "links": {
+    "message": "Liens"
+  },
+  "categoryConversion": {
+    "message": "Conversion"
+  },
+  "categoryPartner": {
+    "message": "Partenaire"
+  },
+  "categoryAdmin": {
+    "message": "Admin"
+  },
+  "categoryApi": {
+    "message": "API"
+  },
+  "categoryDisallowed": {
+    "message": "Non autorisé"
+  },
+  "categoryUser": {
+    "message": "Utilisateur"
+  },
+  "categoryContact": {
+    "message": "Contact"
+  },
+  "categoryLegal": {
+    "message": "Légal"
+  },
+  "categoryContent": {
+    "message": "Contenu"
+  },
+  "categoryFiles": {
+    "message": "Fichiers"
+  },
+  "categoryService": {
+    "message": "Service"
+  },
+  "categoryOther": {
+    "message": "Autre"
+  },
+  "settings": {
+    "message": "Paramètres"
+  },
+  "generalSettings": {
+    "message": "Paramètres généraux"
+  },
+  "autoScan": {
+    "message": "Scan automatique"
+  },
+  "autoScanDesc": {
+    "message": "Scanner automatiquement les pages au chargement."
+  },
+  "language": {
+    "message": "Langue"
+  },
+  "languageDesc": {
+    "message": "Sélectionnez la langue de l'interface."
+  },
+  "theme": {
+    "message": "Thème"
+  },
+  "themeDesc": {
+    "message": "Sélectionnez le thème de l'interface."
+  },
+  "themeLight": {
+    "message": "Clair"
+  },
+  "themeDark": {
+    "message": "Sombre"
+  },
+  "themeAuto": {
+    "message": "Auto"
+  },
+  "categoriesAndPatterns": {
+    "message": "Catégories & Modèles"
+  },
+  "categoriesAndPatternsDesc": {
+    "message": "Gérez les catégories de liens et les modèles personnalisés."
+  },
+  "rename": {
+    "message": "Renommer"
+  },
+  "save": {
+    "message": "Enregistrer"
+  },
+  "delete": {
+    "message": "Supprimer"
+  },
+  "hide": {
+    "message": "Masquer"
+  },
+  "moveUp": {
+    "message": "Déplacer vers le haut"
+  },
+  "moveDown": {
+    "message": "Déplacer vers le bas"
+  },
+  "examples": {
+    "message": "Exemples"
+  },
+  "addPattern": {
+    "message": "Ajouter un modèle"
+  },
+  "hideDefaultPatterns": {
+    "message": "Masquer les modèles par défaut"
+  },
+  "showDefaultPatterns": {
+    "message": "Afficher les modèles par défaut"
+  },
+  "standardPatterns": {
+    "message": "Modèles standard"
+  },
+  "hidePattern": {
+    "message": "Masquer le modèle"
+  },
+  "yourPatterns": {
+    "message": "Vos modèles"
+  },
+  "hiddenCategories": {
+    "message": "Catégories masquées"
+  },
+  "restore": {
+    "message": "Restaurer"
+  },
+  "createNewCategory": {
+    "message": "Créer une nouvelle catégorie"
+  },
+  "categoryNamePlaceholder": {
+    "message": "Nom de la catégorie"
+  },
+  "iconPlaceholder": {
+    "message": "Icône"
+  },
+  "createCategory": {
+    "message": "Créer une catégorie"
+  },
+  "resetOrder": {
+    "message": "Réinitialiser l'ordre"
+  },
+  "scanHistory": {
+    "message": "Historique des scans"
+  },
+  "scanHistoryDesc": {
+    "message": "Historique de vos scans récents."
+  },
+  "historyItems": {
+    "message": "Éléments de l'historique"
+  },
+  "memoryUsed": {
+    "message": "Mémoire utilisée"
+  },
+  "linksCount": {
+    "message": "liens"
+  },
+  "clearHistory": {
+    "message": "Effacer l'historique"
+  },
+  "clearCache": {
+    "message": "Vider le cache"
+  },
+  "settingsSaved": {
+    "message": "Paramètres enregistrés avec succès !"
+  },
+  "languageChanged": {
+    "message": "Langue modifiée avec succès !"
+  },
+  "patternRemoved": {
+    "message": "Modèle supprimé."
+  },
+  "patternAdded": {
+    "message": "Modèle ajouté."
+  },
+  "patternHidden": {
+    "message": "Modèle masqué."
+  },
+  "enterCategoryName": {
+    "message": "Veuillez saisir un nom de catégorie."
+  },
+  "categoryCreated": {
+    "message": "Catégorie créée."
+  },
+  "confirmDeleteCategory": {
+    "message": "Êtes-vous sûr de vouloir supprimer cette catégorie ?"
+  },
+  "categoryDeleted": {
+    "message": "Catégorie supprimée."
+  },
+  "confirmClearHistory": {
+    "message": "Êtes-vous sûr de vouloir effacer l'historique des scans ?"
+  },
+  "historyCleared": {
+    "message": "Historique effacé."
+  },
+  "confirmClearCache": {
+    "message": "Êtes-vous sûr de vouloir vider le cache ?"
+  },
+  "cacheCleared": {
+    "message": "Cache vidé."
+  },
+  "nameChanged": {
+    "message": "Nom modifié."
+  },
+  "deleteCategoryConfirm": {
+    "message": "Êtes-vous sûr de vouloir supprimer cette catégorie ?"
+  },
+  "categoryHidden": {
+    "message": "Catégorie masquée."
+  },
+  "categoryRestored": {
+    "message": "Catégorie restaurée."
+  },
+  "orderChanged": {
+    "message": "Ordre modifié."
+  },
+  "orderReset": {
+    "message": "L'ordre a été réinitialisé par défaut."
+  },
+  "settingsTitle": {
+    "message": "Paramètres de Site Link Explorer"
+  },
+  "maxHistoryItemsLabel": {
+    "message": "Éléments max. de l'historique"
+  },
+  "maxHistoryItemsDesc": {
+    "message": "Le nombre d'enregistrements de l'historique des scans à conserver."
+  }
+}
