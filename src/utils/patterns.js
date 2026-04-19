@@ -1,4 +1,4 @@
-// Система категорий и паттернов для классификации ссылок
+// Система категорій і патернів для класифікації посилань
 
 export const LINK_CATEGORIES = {
   CONVERSION: {
@@ -78,7 +78,7 @@ export const LINK_CATEGORIES = {
     icon: '🚫',
     priority: 5,
     patterns: [
-      // Эта категория заполняется динамически из robots.txt
+      // Ця категорія заповнюється динамічно з robots.txt
     ]
   },
   USER: {
@@ -189,31 +189,31 @@ export const LINK_CATEGORIES = {
 }
 
 /**
- * Классифицирует URL по категориям
- * @param {string} url - URL для классификации
- * @param {Object} customPatterns - Пользовательские паттерны {categoryId: [patterns]}
- * @param {Array} customCategories - Пользовательские категории [{name, icon, patterns}]
- * @param {Object} removedDefaults - Скрытые дефолтные паттерны {categoryId: [patterns]}
- * @returns {Object} - Объект категории с очищенным URL
+ * Класифікує URL за категоріями
+ * @param {string} url - URL для класифікації
+ * @param {Object} customPatterns - Користувацькі патерни {categoryId: [patterns]}
+ * @param {Array} customCategories - Користувацькі категорії [{name, icon, patterns}]
+ * @param {Object} removedDefaults - Приховані дефолтні патерни {categoryId: [patterns]}
+ * @returns {Object} - Об'єкт категорії з очищеним URL
  */
 export function categorizeUrl(url, customPatterns = {}, customCategories = [], removedDefaults = {}) {
-  // Проверяем специальные метки
+  // Перевіряємо спеціальні мітки
   let cleanUrl = url
   let isDisallowed = false
 
   if (url.startsWith('[DISALLOW]')) {
     isDisallowed = true
-    cleanUrl = url.substring(10) // Убираем метку [DISALLOW]
+    cleanUrl = url.substring(10) // Прибираємо мітку [DISALLOW]
   }
 
-  // Если это Disallow ссылка, возвращаем сразу категорию DISALLOWED
+  // Якщо це Disallow-посилання, одразу повертаємо категорію DISALLOWED
   if (isDisallowed) {
     return { ...LINK_CATEGORIES.DISALLOWED, cleanUrl }
   }
 
   const urlLower = cleanUrl.toLowerCase()
 
-  // Сначала проверяем пользовательские категории
+  // Спочатку перевіряємо користувацькі категорії
   for (let i = 0; i < customCategories.length; i++) {
     const cat = customCategories[i]
     const patterns = cat.patterns || []
@@ -224,30 +224,30 @@ export function categorizeUrl(url, customPatterns = {}, customCategories = [], r
           id: `custom_${i}`,
           name: cat.name,
           icon: cat.icon,
-          priority: 0.5 + i * 0.01, // Высокий приоритет для пользовательских
+          priority: 0.5 + i * 0.01, // Високий пріоритет для користувацьких
           cleanUrl
         }
       }
     }
   }
 
-  // Проходим по всем стандартным категориям кроме OTHER и DISALLOWED
+  // Проходимо по всіх стандартних категоріях, окрім OTHER і DISALLOWED
   for (const category of Object.values(LINK_CATEGORIES)) {
     if (category.id === 'other' || category.id === 'disallowed') continue
 
-    // Фильтруем стандартные паттерны (убираем скрытые)
+    // Фільтруємо стандартні патерни (прибираємо приховані)
     const removedForCategory = removedDefaults[category.id] || []
     const activeDefaultPatterns = category.patterns.filter(
       p => !removedForCategory.includes(p)
     )
 
-    // Объединяем стандартные и пользовательские паттерны
+    // Об'єднуємо стандартні та користувацькі патерни
     const allPatterns = [
       ...activeDefaultPatterns,
       ...(customPatterns[category.id] || [])
     ]
 
-    // Проверяем, содержит ли URL паттерн из категории
+    // Перевіряємо, чи містить URL патерн із категорії
     for (const pattern of allPatterns) {
       if (urlLower.includes(pattern.toLowerCase())) {
         return { ...category, cleanUrl }
@@ -255,23 +255,23 @@ export function categorizeUrl(url, customPatterns = {}, customCategories = [], r
     }
   }
 
-  // Если не подошла ни одна категория, возвращаем OTHER
+  // Якщо не підійшла жодна категорія, повертаємо OTHER
   return { ...LINK_CATEGORIES.OTHER, cleanUrl }
 }
 
 /**
- * Группирует массив ссылок по категориям
- * @param {Array} links - Массив URL
- * @param {Object} customPatterns - Пользовательские паттерны
- * @param {Array} customCategories - Пользовательские категории
- * @param {Array} categoryOrder - Пользовательский порядок категорий (массив ID категорий)
- * @param {Object} removedDefaults - Скрытые дефолтные паттерны
- * @returns {Object} - Объект с группированными ссылками
+ * Групує масив посилань за категоріями
+ * @param {Array} links - Масив URL
+ * @param {Object} customPatterns - Користувацькі патерни
+ * @param {Array} customCategories - Користувацькі категорії
+ * @param {Array} categoryOrder - Користувацький порядок категорій (масив ID категорій)
+ * @param {Object} removedDefaults - Приховані дефолтні патерни
+ * @returns {Object} - Об'єкт зі згрупованими посиланнями
  */
 export function groupLinksByCategory(links, customPatterns = {}, customCategories = [], categoryOrder = null, removedDefaults = {}) {
   const grouped = {}
 
-  // Инициализируем группы для стандартных категорий
+  // Ініціалізуємо групи для стандартних категорій
   for (const category of Object.values(LINK_CATEGORIES)) {
     grouped[category.id] = {
       category,
@@ -280,7 +280,7 @@ export function groupLinksByCategory(links, customPatterns = {}, customCategorie
     }
   }
 
-  // Инициализируем группы для пользовательских категорий
+  // Ініціалізуємо групи для користувацьких категорій
   for (let i = 0; i < customCategories.length; i++) {
     const cat = customCategories[i]
     const customId = `custom_${i}`
@@ -297,25 +297,25 @@ export function groupLinksByCategory(links, customPatterns = {}, customCategorie
     }
   }
 
-  // Распределяем ссылки по категориям
+  // Розподіляємо посилання за категоріями
   for (const link of links) {
     const result = categorizeUrl(link, customPatterns, customCategories, removedDefaults)
     const cleanUrl = result.cleanUrl || link
     const categoryId = result.id
 
-    // Используем очищенный URL без меток
+    // Використовуємо очищений URL без міток
     if (grouped[categoryId]) {
       grouped[categoryId].links.push(cleanUrl)
       grouped[categoryId].count++
     }
   }
 
-  // Если указан пользовательский порядок, применяем его
+  // Якщо вказаний користувацький порядок, застосовуємо його
   if (categoryOrder && Array.isArray(categoryOrder)) {
     const orderedGroups = {}
     let priority = 1
 
-    // Сначала добавляем категории в заданном порядке
+    // Спочатку додаємо категорії в заданому порядку
     for (const categoryId of categoryOrder) {
       if (grouped[categoryId]) {
         const group = grouped[categoryId]
@@ -324,7 +324,7 @@ export function groupLinksByCategory(links, customPatterns = {}, customCategorie
       }
     }
 
-    // Затем добавляем оставшиеся категории
+    // Потім додаємо категорії, що лишилися
     for (const categoryId in grouped) {
       if (!orderedGroups[categoryId]) {
         orderedGroups[categoryId] = grouped[categoryId]
@@ -334,7 +334,7 @@ export function groupLinksByCategory(links, customPatterns = {}, customCategorie
     return orderedGroups
   }
 
-  // Сортируем по приоритету
+  // Сортуємо за пріоритетом
   return Object.values(grouped)
     .sort((a, b) => a.category.priority - b.category.priority)
     .reduce((acc, group) => {
@@ -344,9 +344,9 @@ export function groupLinksByCategory(links, customPatterns = {}, customCategorie
 }
 
 /**
- * Добавляет пользовательский паттерн в категорию
- * @param {string} categoryId - ID категории
- * @param {string} pattern - Новый паттерн
+ * Додає користувацький патерн до категорії
+ * @param {string} categoryId - ID категорії
+ * @param {string} pattern - Новий патерн
  */
 export function addCustomPattern(categoryId, pattern) {
   const category = LINK_CATEGORIES[categoryId.toUpperCase()]
@@ -356,9 +356,9 @@ export function addCustomPattern(categoryId, pattern) {
 }
 
 /**
- * Удаляет дубликаты ссылок (игнорируя query параметры)
- * @param {Array} links - Массив URL
- * @returns {Array} - Массив уникальных URL
+ * Видаляє дублікати посилань (ігноруючи query параметри)
+ * @param {Array} links - Масив URL
+ * @returns {Array} - Масив унікальних URL
  */
 export function removeDuplicateLinks(links) {
   const seen = new Set()
@@ -372,7 +372,7 @@ export function removeDuplicateLinks(links) {
       seen.add(cleanUrl)
       return true
     } catch {
-      // Если URL невалиден, все равно добавляем (может быть относительным)
+      // Якщо URL невалідний, все одно додаємо (може бути відносним)
       if (seen.has(link)) {
         return false
       }
@@ -383,31 +383,31 @@ export function removeDuplicateLinks(links) {
 }
 
 /**
- * Нормализует URL (добавляет протокол если нужно)
- * @param {string} url - URL или путь
- * @param {string} baseUrl - Базовый URL сайта
- * @returns {string} - Нормализованный URL
+ * Нормалізує URL (додає протокол за потреби)
+ * @param {string} url - URL або шлях
+ * @param {string} baseUrl - Базовий URL сайту
+ * @returns {string} - Нормалізований URL
  */
 export function normalizeUrl(url, baseUrl) {
   try {
-    // Если URL уже полный, возвращаем как есть
+    // Якщо URL уже повний, повертаємо як є
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url
     }
 
-    // Если начинается с //, добавляем протокол
+    // Якщо починається з //, додаємо протокол
     if (url.startsWith('//')) {
       const base = new URL(baseUrl)
       return `${base.protocol}${url}`
     }
 
-    // Если относительный путь, добавляем базовый URL
+    // Якщо відносний шлях, додаємо базовий URL
     if (url.startsWith('/')) {
       const base = new URL(baseUrl)
       return `${base.origin}${url}`
     }
 
-    // Если путь без /, добавляем базовый URL с /
+    // Якщо шлях без /, додаємо базовий URL з /
     const base = new URL(baseUrl)
     return `${base.origin}/${url}`
   } catch {

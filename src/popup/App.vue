@@ -8,21 +8,21 @@
           <button
             @click="toggleCategoriesExpand"
             class="icon-btn"
-            :title="categoriesExpanded ? 'Свернуть категории' : 'Развернуть категории'"
+            :title="categoriesExpanded ? 'Згорнути категорії' : 'Розгорнути категорії'"
           >
             {{ categoriesExpanded ? '⬆️' : '⬇️' }}
           </button>
           <button
             @click="toggleTheme"
             class="icon-btn"
-            :title="theme === 'dark' ? 'Светлая тема' : 'Темная тема'"
+            :title="theme === 'dark' ? 'Світла тема' : 'Темна тема'"
           >
             {{ theme === 'dark' ? '☀️' : '🌙' }}
           </button>
           <button
             @click="openOptions"
             class="icon-btn"
-            title="Настройки"
+            title="Налаштування"
           >
             ⚙️
           </button>
@@ -41,7 +41,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Поиск по ссылкам..."
+          placeholder="Пошук за посиланнями..."
           class="search-input"
         />
         <button
@@ -144,7 +144,7 @@
           @click="store.exportToCSV()"
           class="btn btn-outline"
           :disabled="store.links.length === 0"
-          title="Экспорт в CSV"
+          title="Експорт у CSV"
         >
           CSV
         </button>
@@ -152,7 +152,7 @@
           @click="store.exportToJSON()"
           class="btn btn-outline"
           :disabled="store.links.length === 0"
-          title="Экспорт в JSON"
+          title="Експорт у JSON"
         >
           JSON
         </button>
@@ -260,7 +260,7 @@ function openLink(url) {
 
 function copyLink(link) {
   navigator.clipboard.writeText(link).then(() => {
-    showToastMessage('Ссылка скопирована!')
+    showToastMessage('Посилання скопійовано!')
   })
 }
 
@@ -293,10 +293,10 @@ function onDrag(e) {
   if (!isDragging.value || !categoriesContainer.value) return
 
   e.preventDefault()
-  isClick.value = false // Движение мыши - это не клик
+  isClick.value = false // Рух миші - це не клік
 
   const x = e.pageX - categoriesContainer.value.offsetLeft
-  const walk = (x - startX.value) * 2 // Умножаем для более быстрого скролла
+  const walk = (x - startX.value) * 2 // Множимо для швидшого скролу
   categoriesContainer.value.scrollLeft = scrollLeft.value - walk
 }
 
@@ -309,7 +309,7 @@ function stopDrag() {
 }
 
 function onButtonMouseDown(e) {
-  // Сохраняем начальные координаты для определения клика
+  // Зберігаємо початкові координати для визначення кліку
   isClick.value = true
 }
 </script>

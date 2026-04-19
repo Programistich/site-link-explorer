@@ -3,52 +3,52 @@ import { getScanResults, extractDomain } from '../services/storage.js'
 
 export const useLinksStore = defineStore('links', {
   state: () => ({
-    // Текущий домен
+    // Поточний домен
     currentDomain: '',
 
-    // Все найденные ссылки
+    // Усі знайдені посилання
     links: [],
 
-    // Группированные ссылки по категориям
+    // Згруповані посилання за категоріями
     grouped: {},
 
-    // Общее количество ссылок
+    // Загальна кількість посилань
     totalCount: 0,
 
-    // Статус загрузки
+    // Статус завантаження
     loading: false,
 
-    // Ошибка
+    // Помилка
     error: null,
 
-    // Поисковый запрос
+    // Пошуковий запит
     searchQuery: '',
 
-    // Выбранная категория для фильтрации (null = все)
+    // Обрана категорія для фільтрації (null = усі)
     selectedCategory: null,
 
-    // Timestamp последнего сканирования
+    // Timestamp останнього сканування
     lastScanTimestamp: null
   }),
 
   getters: {
     /**
-     * Фильтрованные ссылки по поисковому запросу и категории
+     * Відфільтровані посилання за пошуковим запитом і категорією
      */
     filteredLinks(state) {
       let filtered = [...state.links]
 
-      // Фильтрация по категории
+      // Фільтрація за категорією
       if (state.selectedCategory) {
         const categoryLinks = state.grouped[state.selectedCategory]?.links || []
-        // Убираем префиксы [DISALLOW] перед сравнением
+        // Прибираємо префікси [DISALLOW] перед порівнянням
         filtered = filtered.filter(link => {
           const cleanLink = link.startsWith('[DISALLOW]') ? link.substring(10) : link
           return categoryLinks.includes(cleanLink)
         })
       }
 
-      // Фильтрация по поисковому запросу
+      // Фільтрація за пошуковим запитом
       if (state.searchQuery) {
         const query = state.searchQuery.toLowerCase()
         filtered = filtered.filter(link => {
@@ -61,7 +61,7 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Фильтрованные ссылки без служебных префиксов для отображения
+     * Відфільтровані посилання без службових префіксів для відображення
      */
     displayLinks(state) {
       return this.filteredLinks.map(link => {
@@ -73,7 +73,7 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Категории с количеством ссылок
+     * Категорії з кількістю посилань
      */
     categoriesWithCount(state) {
       return Object.entries(state.grouped).map(([id, group]) => ({
@@ -84,7 +84,7 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Интересные ссылки (все кроме категории OTHER)
+     * Цікаві посилання (усі, окрім категорії OTHER)
      */
     interestingLinks(state) {
       const interesting = []
@@ -99,7 +99,7 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Время с последнего сканирования в читаемом формате
+     * Час від останнього сканування в читабельному форматі
      */
     lastScanFormatted(state) {
       if (!state.lastScanTimestamp) return null
@@ -110,34 +110,34 @@ export const useLinksStore = defineStore('links', {
       const hours = Math.floor(diff / 3600000)
       const days = Math.floor(diff / 86400000)
 
-      if (minutes < 1) return 'только что'
-      if (minutes < 60) return `${minutes} мин назад`
-      if (hours < 24) return `${hours} ч назад`
-      return `${days} д назад`
+      if (minutes < 1) return 'щойно'
+      if (minutes < 60) return `${minutes} хв тому`
+      if (hours < 24) return `${hours} год тому`
+      return `${days} дн тому`
     }
   },
 
   actions: {
     /**
-     * Загружает результаты сканирования для текущей вкладки
+     * Завантажує результати сканування для поточної вкладки
      */
     async loadCurrentTabResults() {
       this.loading = true
       this.error = null
 
       try {
-        // Получаем текущую активную вкладку
+        // Отримуємо поточну активну вкладку
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
 
         if (!tab || !tab.url) {
-          throw new Error('Не удалось получить текущую вкладку')
+          throw new Error('Не вдалося отримати поточну вкладку')
         }
 
-        // Извлекаем домен
+        // Витягуємо домен
         const domain = extractDomain(tab.url)
         this.currentDomain = domain
 
-        // Получаем результаты из хранилища
+        // Отримуємо результати зі сховища
         const results = await getScanResults(domain)
 
         if (results) {
@@ -146,7 +146,7 @@ export const useLinksStore = defineStore('links', {
           this.totalCount = results.totalCount || 0
           this.lastScanTimestamp = results.timestamp
         } else {
-          // Если результатов нет, запускаем сканирование
+          // Якщо результатів немає, запускаємо сканування
           await this.scanCurrentTab()
         }
       } catch (error) {
@@ -158,21 +158,21 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Запускает сканирование текущей вкладки
+     * Запускає сканування поточної вкладки
      */
     async scanCurrentTab() {
       this.loading = true
       this.error = null
 
       try {
-        // Получаем текущую активную вкладку
+        // Отримуємо поточну активну вкладку
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
 
         if (!tab || !tab.url) {
-          throw new Error('Не удалось получить текущую вкладку')
+          throw new Error('Не вдалося отримати поточну вкладку')
         }
 
-        // Отправляем сообщение background script для начала сканирования
+        // Надсилаємо повідомлення background script для запуску сканування
         const response = await chrome.runtime.sendMessage({
           action: 'scan',
           url: tab.url
@@ -185,7 +185,7 @@ export const useLinksStore = defineStore('links', {
           this.lastScanTimestamp = Date.now()
           this.currentDomain = response.data.domain
         } else {
-          throw new Error(response.error || 'Ошибка сканирования')
+          throw new Error(response.error || 'Помилка сканування')
         }
       } catch (error) {
         console.error('Error scanning:', error)
@@ -196,21 +196,21 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Устанавливает поисковый запрос
+     * Встановлює пошуковий запит
      */
     setSearchQuery(query) {
       this.searchQuery = query
     },
 
     /**
-     * Устанавливает выбранную категорию
+     * Встановлює обрану категорію
      */
     setSelectedCategory(categoryId) {
       this.selectedCategory = categoryId
     },
 
     /**
-     * Сбрасывает фильтры
+     * Скидає фільтри
      */
     resetFilters() {
       this.searchQuery = ''
@@ -218,7 +218,7 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Открывает ссылку в новой вкладке
+     * Відкриває посилання в новій вкладці
      */
     async openLink(url) {
       try {
@@ -229,7 +229,7 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Экспортирует ссылки в CSV
+     * Експортує посилання в CSV
      */
     exportToCSV() {
       const csv = ['URL,Category']
@@ -250,7 +250,7 @@ export const useLinksStore = defineStore('links', {
     },
 
     /**
-     * Экспортирует ссылки в JSON
+     * Експортує посилання в JSON
      */
     exportToJSON() {
       const data = {

@@ -100,7 +100,7 @@
               <div class="unified-category-main" @click="toggleCategoryExpand(category.id)">
                 <span class="unified-category-icon">{{ category.icon }}</span>
 
-                <!-- Редактирование названия -->
+                <!-- Редагування назви -->
                 <input
                   v-if="editingCategoryIndex === index"
                   v-model="editingCategoryName"
@@ -120,7 +120,7 @@
               </div>
 
               <div class="unified-category-controls">
-                <!-- Кнопка редактирования -->
+                <!-- Кнопка редагування -->
                 <button
                   v-if="editingCategoryIndex !== index"
                   @click.stop="startEditCategoryName(index)"
@@ -138,7 +138,7 @@
                   ✓
                 </button>
 
-                <!-- Кнопка удаления/скрытия -->
+                <!-- Кнопка видалення/приховування -->
                 <button
                   @click.stop="toggleCategoryVisibility(category.id)"
                   class="btn-icon"
@@ -147,7 +147,7 @@
                   {{ category.id.startsWith('custom_') ? '🗑️' : '👁️' }}
                 </button>
 
-                <!-- Кнопки перемещения -->
+                <!-- Кнопки переміщення -->
                 <button
                   @click.stop="moveCategoryUp(index)"
                   :disabled="index === 0"
@@ -169,7 +169,7 @@
 
             <!-- Category Content (Patterns) -->
             <div v-if="expandedCategories[category.id]" class="unified-category-content">
-              <!-- Примеры паттернов -->
+              <!-- Приклади патернів -->
               <div v-if="getExamples(category.id).length > 0" class="pattern-examples">
                 <span class="examples-label">{{ $t('examples') }}</span>
                 <span class="example-item" v-for="(pattern, idx) in getExamples(category.id)" :key="idx">
@@ -177,7 +177,7 @@
                 </span>
               </div>
 
-              <!-- Input для добавления паттерна -->
+              <!-- Input для додавання патерна -->
               <div class="pattern-input-group">
                 <input
                   type="text"
@@ -194,7 +194,7 @@
                 </button>
               </div>
 
-              <!-- Дефолтные паттерны -->
+              <!-- Дефолтні патерни -->
               <div v-if="getCategoryPatternsFromDefinition(category.id)?.length > 0">
                 <button
                   @click="toggleDefaultPatterns(category.id)"
@@ -224,7 +224,7 @@
                 </div>
               </div>
 
-              <!-- Пользовательские паттерны -->
+              <!-- Користувацькі патерни -->
               <div v-if="getCategoryCustomPatterns(category.id)?.length > 0" class="patterns-list">
                 <div class="patterns-section-label">
                   <span>{{ $t('yourPatterns') }}</span>
@@ -247,7 +247,7 @@
           </div>
         </div>
 
-        <!-- Скрытые категории -->
+        <!-- Приховані категорії -->
         <div v-if="hiddenCategories.length > 0" class="hidden-categories-section">
           <h3>{{ $t('hiddenCategories') }}</h3>
           <div class="hidden-categories-list">
@@ -267,7 +267,7 @@
           </div>
         </div>
 
-        <!-- Создание новой категории -->
+        <!-- Створення нової категорії -->
         <div class="create-category-section">
           <h3>✨ {{ $t('createNewCategory') }}</h3>
           <div class="custom-category-input">
@@ -378,9 +378,9 @@ const settings = ref({
 // Custom patterns
 const customPatterns = ref({})
 const newPatterns = ref({})
-const removedDefaultPatterns = ref({}) // Хранит скрытые дефолтные паттерны
-const showDefaultPatterns = ref({}) // Показывать ли дефолтные паттерны для категории
-const expandedCategories = ref({}) // Какие категории развернуты
+const removedDefaultPatterns = ref({}) // Зберігає приховані дефолтні патерни
+const showDefaultPatterns = ref({}) // Чи показувати дефолтні патерни для категорії
+const expandedCategories = ref({}) // Які категорії розгорнуті
 
 // Custom categories
 const customCategories = ref([])
@@ -464,7 +464,7 @@ async function saveSettings() {
 async function changeLanguage() {
   await setLocale(currentLocale.value)
   showToastMessage($t('languageChanged'))
-  // Перезагружаем страницу для применения нового языка
+  // Перезавантажуємо сторінку для застосування нової мови
   setTimeout(() => {
     window.location.reload()
   }, 1000)
@@ -529,7 +529,7 @@ async function addPattern(categoryId) {
   if (!pattern) return
 
   if (categoryId.startsWith('custom_')) {
-    // Для пользовательских категорий
+    // Для користувацьких категорій
     const catIndex = parseInt(categoryId.replace('custom_', ''))
     if (!customCategories.value[catIndex].patterns) {
       customCategories.value[catIndex].patterns = []
@@ -541,7 +541,7 @@ async function addPattern(categoryId) {
       showToastMessage($t('patternAdded'))
     }
   } else {
-    // Для стандартных категорий
+    // Для стандартних категорій
     if (!customPatterns.value[categoryId]) {
       customPatterns.value[categoryId] = []
     }
@@ -566,7 +566,7 @@ function toggleDefaultPatterns(categoryId) {
   showDefaultPatterns.value[categoryId] = !showDefaultPatterns.value[categoryId]
 }
 
-// Remove default pattern (скрывает паттерн)
+// Remove default pattern (приховує патерн)
 async function removeDefaultPattern(categoryId, pattern) {
   if (!removedDefaultPatterns.value[categoryId]) {
     removedDefaultPatterns.value[categoryId] = []
@@ -596,7 +596,7 @@ async function addCustomCategory() {
   })
 
   await saveAllPatterns()
-  await loadCategoryOrder() // Перезагружаем список категорий
+  await loadCategoryOrder() // Перезавантажуємо список категорій
   newCategoryName.value = ''
   newCategoryIcon.value = ''
   showToastMessage($t('categoryCreated'))
@@ -688,7 +688,7 @@ function formatBytes(bytes) {
 // Format time
 function formatTime(timestamp) {
   const date = new Date(timestamp)
-  return date.toLocaleString('ru-RU', {
+  return date.toLocaleString(currentLocale.value || 'en', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -710,7 +710,7 @@ function showToastMessage(message) {
 async function loadCategoryOrder() {
   const order = await getCategoryOrder()
 
-  // Создаем список всех категорий (стандартных + пользовательских)
+  // Створюємо список усіх категорій (стандартних + користувацьких)
   const allCategories = [
     ...categories.map(cat => ({
       ...cat,
@@ -724,25 +724,25 @@ async function loadCategoryOrder() {
     }))
   ]
 
-  // Фильтруем скрытые категории
+  // Фільтруємо приховані категорії
   const visibleCategories = allCategories.filter(
     cat => !hiddenCategoryIds.value.includes(cat.id)
   )
 
-  // Формируем список скрытых
+  // Формуємо список прихованих
   hiddenCategories.value = allCategories.filter(
     cat => hiddenCategoryIds.value.includes(cat.id)
   )
 
   if (order && Array.isArray(order)) {
-    // Если есть сохраненный порядок, применяем его
+    // Якщо є збережений порядок, застосовуємо його
     const ordered = []
     for (const categoryId of order) {
       const cat = visibleCategories.find(c => c.id === categoryId)
       if (cat) ordered.push(cat)
     }
 
-    // Добавляем категории, которых нет в сохраненном порядке
+    // Додаємо категорії, яких немає у збереженому порядку
     for (const cat of visibleCategories) {
       if (!ordered.find(c => c.id === cat.id)) {
         ordered.push(cat)
@@ -751,7 +751,7 @@ async function loadCategoryOrder() {
 
     sortableCategories.value = ordered
   } else {
-    // Иначе используем порядок по умолчанию
+    // Інакше використовуємо порядок за замовчуванням
     sortableCategories.value = visibleCategories
   }
 }
@@ -762,7 +762,7 @@ function startEditCategoryName(index) {
   const category = sortableCategories.value[index]
   editingCategoryName.value = category.displayName || category.name
 
-  // Фокус на input в следующем тике
+  // Фокус на input у наступному тіку
   setTimeout(() => {
     if (categoryNameInput.value && categoryNameInput.value[0]) {
       categoryNameInput.value[0].focus()
@@ -779,7 +779,7 @@ async function saveCategoryName(index) {
   const category = sortableCategories.value[index]
   categoryRenames.value[category.id] = editingCategoryName.value.trim()
 
-  // Обновляем displayName
+  // Оновлюємо displayName
   category.displayName = editingCategoryName.value.trim()
 
   editingCategoryIndex.value = null
@@ -797,7 +797,7 @@ function cancelEditCategoryName() {
 // Category visibility functions
 async function toggleCategoryVisibility(categoryId) {
   if (categoryId.startsWith('custom_')) {
-    // Для пользовательских категорий - удаление
+    // Для користувацьких категорій - видалення
     if (confirm($t('deleteCategoryConfirm'))) {
       const index = parseInt(categoryId.replace('custom_', ''))
       customCategories.value.splice(index, 1)
@@ -806,7 +806,7 @@ async function toggleCategoryVisibility(categoryId) {
       showToastMessage($t('categoryDeleted'))
     }
   } else {
-    // Для дефолтных - скрытие
+    // Для дефолтних - приховування
     if (!hiddenCategoryIds.value.includes(categoryId)) {
       hiddenCategoryIds.value.push(categoryId)
     }
@@ -838,7 +838,7 @@ function moveCategoryUp(index) {
 
   sortableCategories.value = items
 
-  // Сохраняем новый порядок
+  // Зберігаємо новий порядок
   const order = sortableCategories.value.map(c => c.id)
   saveCategoryOrder(order)
   showToastMessage($t('orderChanged'))
@@ -854,7 +854,7 @@ function moveCategoryDown(index) {
 
   sortableCategories.value = items
 
-  // Сохраняем новый порядок
+  // Зберігаємо новий порядок
   const order = sortableCategories.value.map(c => c.id)
   saveCategoryOrder(order)
   showToastMessage($t('orderChanged'))

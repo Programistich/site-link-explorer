@@ -1,5 +1,5 @@
 /**
- * Сервис для работы с Chrome Storage API
+ * Сервіс для роботи з Chrome Storage API
  */
 
 const STORAGE_KEYS = {
@@ -16,10 +16,10 @@ const DEFAULT_SETTINGS = {
 }
 
 /**
- * Сохраняет результаты сканирования для домена
- * @param {string} domain - Домен сайта
- * @param {Array} links - Массив ссылок
- * @param {Object} grouped - Группированные ссылки
+ * Зберігає результати сканування для домену
+ * @param {string} domain - Домен сайту
+ * @param {Array} links - Масив посилань
+ * @param {Object} grouped - Згруповані посилання
  * @returns {Promise}
  */
 export async function saveScanResults(domain, links, grouped) {
@@ -32,12 +32,12 @@ export async function saveScanResults(domain, links, grouped) {
   }
 
   try {
-    // Сохраняем результаты для конкретного домена
+    // Зберігаємо результати для конкретного домену
     await chrome.storage.local.set({
       [`${STORAGE_KEYS.SCAN_RESULTS}_${domain}`]: data
     })
 
-    // Добавляем в историю
+    // Додаємо в історію
     await addToHistory(data)
 
     return true
@@ -48,9 +48,9 @@ export async function saveScanResults(domain, links, grouped) {
 }
 
 /**
- * Получает результаты сканирования для домена
- * @param {string} domain - Домен сайта
- * @returns {Promise<Object|null>} - Результаты сканирования или null
+ * Отримує результати сканування для домену
+ * @param {string} domain - Домен сайту
+ * @returns {Promise<Object|null>} - Результати сканування або null
  */
 export async function getScanResults(domain) {
   try {
@@ -64,32 +64,32 @@ export async function getScanResults(domain) {
 }
 
 /**
- * Добавляет запись в историю сканирований
- * @param {Object} scanData - Данные сканирования
+ * Додає запис до історії сканувань
+ * @param {Object} scanData - Дані сканування
  * @returns {Promise}
  */
 export async function addToHistory(scanData) {
   try {
-    // Получаем текущую историю
+    // Отримуємо поточну історію
     const result = await chrome.storage.local.get(STORAGE_KEYS.SCAN_HISTORY)
     let history = result[STORAGE_KEYS.SCAN_HISTORY] || []
 
-    // Добавляем новую запись в начало
+    // Додаємо новий запис на початок
     history.unshift({
       domain: scanData.domain,
       timestamp: scanData.timestamp,
       totalCount: scanData.totalCount
     })
 
-    // Получаем настройки
+    // Отримуємо налаштування
     const settings = await getUserSettings()
 
-    // Ограничиваем размер истории
+    // Обмежуємо розмір історії
     if (history.length > settings.maxHistoryItems) {
       history = history.slice(0, settings.maxHistoryItems)
     }
 
-    // Сохраняем обновленную историю
+    // Зберігаємо оновлену історію
     await chrome.storage.local.set({
       [STORAGE_KEYS.SCAN_HISTORY]: history
     })
@@ -99,8 +99,8 @@ export async function addToHistory(scanData) {
 }
 
 /**
- * Получает историю сканирований
- * @returns {Promise<Array>} - Массив записей истории
+ * Отримує історію сканувань
+ * @returns {Promise<Array>} - Масив записів історії
  */
 export async function getScanHistory() {
   try {
@@ -113,7 +113,7 @@ export async function getScanHistory() {
 }
 
 /**
- * Очищает историю сканирований
+ * Очищає історію сканувань
  * @returns {Promise}
  */
 export async function clearScanHistory() {
@@ -127,8 +127,8 @@ export async function clearScanHistory() {
 }
 
 /**
- * Получает настройки пользователя
- * @returns {Promise<Object>} - Настройки пользователя
+ * Отримує налаштування користувача
+ * @returns {Promise<Object>} - Налаштування користувача
  */
 export async function getUserSettings() {
   try {
@@ -141,8 +141,8 @@ export async function getUserSettings() {
 }
 
 /**
- * Сохраняет настройки пользователя
- * @param {Object} settings - Настройки для сохранения
+ * Зберігає налаштування користувача
+ * @param {Object} settings - Налаштування для збереження
  * @returns {Promise}
  */
 export async function saveUserSettings(settings) {
@@ -162,8 +162,8 @@ export async function saveUserSettings(settings) {
 }
 
 /**
- * Получает пользовательские паттерны
- * @returns {Promise<Object>} - Объект с пользовательскими паттернами
+ * Отримує користувацькі патерни
+ * @returns {Promise<Object>} - Об'єкт із користувацькими патернами
  */
 export async function getCustomPatterns() {
   try {
@@ -176,8 +176,8 @@ export async function getCustomPatterns() {
 }
 
 /**
- * Сохраняет пользовательские паттерны
- * @param {Object} patterns - Объект с паттернами по категориям и категориями
+ * Зберігає користувацькі патерни
+ * @param {Object} patterns - Об'єкт із патернами за категоріями та категоріями
  * @returns {Promise}
  */
 export async function saveCustomPatterns(patterns) {
@@ -193,8 +193,8 @@ export async function saveCustomPatterns(patterns) {
 }
 
 /**
- * Получает порядок категорий пользователя
- * @returns {Promise<Array>} - Массив ID категорий в порядке пользователя
+ * Отримує порядок категорій користувача
+ * @returns {Promise<Array>} - Масив ID категорій у порядку користувача
  */
 export async function getCategoryOrder() {
   try {
@@ -207,8 +207,8 @@ export async function getCategoryOrder() {
 }
 
 /**
- * Сохраняет порядок категорий
- * @param {Array} order - Массив ID категорий
+ * Зберігає порядок категорій
+ * @param {Array} order - Масив ID категорій
  * @returns {Promise}
  */
 export async function saveCategoryOrder(order) {
@@ -222,23 +222,23 @@ export async function saveCategoryOrder(order) {
 }
 
 /**
- * Очищает весь кеш (результаты сканирования)
+ * Очищає весь кеш (результати сканування)
  * @returns {Promise}
  */
 export async function clearCache() {
   try {
-    // Получаем все ключи
+    // Отримуємо всі ключі
     const allData = await chrome.storage.local.get(null)
     const keysToRemove = []
 
-    // Находим все ключи результатов сканирования
+    // Знаходимо всі ключі результатів сканування
     for (const key in allData) {
       if (key.startsWith(STORAGE_KEYS.SCAN_RESULTS)) {
         keysToRemove.push(key)
       }
     }
 
-    // Удаляем все результаты сканирования
+    // Видаляємо всі результати сканування
     if (keysToRemove.length > 0) {
       await chrome.storage.local.remove(keysToRemove)
     }
@@ -251,8 +251,8 @@ export async function clearCache() {
 }
 
 /**
- * Получает размер использованного хранилища
- * @returns {Promise<number>} - Размер в байтах
+ * Отримує розмір використаного сховища
+ * @returns {Promise<number>} - Розмір у байтах
  */
 export async function getStorageSize() {
   try {
@@ -265,7 +265,7 @@ export async function getStorageSize() {
 }
 
 /**
- * Извлекает домен из URL
+ * Витягує домен із URL
  * @param {string} url - URL
  * @returns {string} - Домен
  */

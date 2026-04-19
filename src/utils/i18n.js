@@ -1,5 +1,5 @@
 /**
- * Утилита для работы с i18n в Chrome Extensions
+ * Утиліта для роботи з i18n у Chrome Extensions
  */
 
 let currentLocale = 'en';
@@ -8,7 +8,7 @@ export const messages = {};
 const supportedLocales = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'uk', name: 'Українська', flag: '🇺🇦' },
     { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
     { code: 'fr', name: 'Français', flag: '🇫🇷' }
 ];
@@ -66,7 +66,14 @@ export function getCurrentLocale() {
 export function getInitialLocale() {
     const savedLocale = localStorage.getItem('user_locale');
     if (savedLocale) {
-        return savedLocale;
+        if (savedLocale === 'ru') {
+            localStorage.setItem('user_locale', 'en');
+            return 'en';
+        }
+
+        if (supportedLocales.some(l => l.code === savedLocale)) {
+            return savedLocale;
+        }
     }
     if (typeof chrome !== 'undefined' && chrome.i18n) {
         const uiLang = chrome.i18n.getUILanguage();
@@ -100,7 +107,7 @@ export function getCategoryNames() {
   }
 }
 
-// Экспортируем как глобальную функцию для использования в шаблонах
+// Експортуємо як глобальну функцію для використання у шаблонах
 if (typeof window !== 'undefined') {
   window.$t = t
 }

@@ -1,26 +1,26 @@
 import { normalizeUrl, removeDuplicateLinks } from '../utils/patterns.js'
 
 /**
- * Сервис для сканирования сайтов и извлечения ссылок
+ * Сервіс для сканування сайтів і витягування посилань
  */
 export class ScannerService {
   constructor() {
-    this.timeout = 10000 // 10 секунд таймаут для запросов
+    this.timeout = 10000 // 10 секунд таймаут для запитів
   }
 
   /**
-   * Основной метод сканирования сайта
-   * @param {string} baseUrl - URL сайта для сканирования
-   * @returns {Promise<Array>} - Массив найденных ссылок
+   * Основний метод сканування сайту
+   * @param {string} baseUrl - URL сайту для сканування
+   * @returns {Promise<Array>} - Масив знайдених посилань
    */
   async scanSite(baseUrl) {
     const links = new Set()
 
     try {
-      // Нормализуем базовый URL
+      // Нормалізуємо базовий URL
       const normalizedBaseUrl = this.normalizeBaseUrl(baseUrl)
 
-      // Параллельно запускаем все методы сканирования
+      // Паралельно запускаємо всі методи сканування
       const results = await Promise.allSettled([
         this.scanSitemapIndex(normalizedBaseUrl),
         this.scanSitemap(normalizedBaseUrl),
@@ -28,14 +28,14 @@ export class ScannerService {
         this.scanAlternativeSitemaps(normalizedBaseUrl)
       ])
 
-      // Собираем все найденные ссылки
+      // Збираємо всі знайдені посилання
       for (const result of results) {
         if (result.status === 'fulfilled' && Array.isArray(result.value)) {
           result.value.forEach(link => links.add(link))
         }
       }
 
-      // Преобразуем Set в массив, убираем дубликаты и возвращаем
+      // Перетворюємо Set у масив, прибираємо дублікати та повертаємо
       return removeDuplicateLinks(Array.from(links))
     } catch (error) {
       console.error('Error scanning site:', error)
@@ -44,16 +44,16 @@ export class ScannerService {
   }
 
   /**
-   * Нормализует базовый URL
-   * @param {string} url - URL для нормализации
-   * @returns {string} - Нормализованный URL
+   * Нормалізує базовий URL
+   * @param {string} url - URL для нормалізації
+   * @returns {string} - Нормалізований URL
    */
   normalizeBaseUrl(url) {
     try {
       const urlObj = new URL(url)
       return `${urlObj.protocol}//${urlObj.host}`
     } catch {
-      // Если URL невалиден, пробуем добавить https://
+      // Якщо URL невалідний, пробуємо додати https://
       if (!url.startsWith('http')) {
         return `https://${url}`
       }
@@ -62,9 +62,9 @@ export class ScannerService {
   }
 
   /**
-   * Парсит sitemap_index.xml
-   * @param {string} baseUrl - Базовый URL сайта
-   * @returns {Promise<Array>} - Массив ссылок из всех sitemap
+   * Парсить sitemap_index.xml
+   * @param {string} baseUrl - Базовий URL сайту
+   * @returns {Promise<Array>} - Масив посилань з усіх sitemap
    */
   async scanSitemapIndex(baseUrl) {
     const sitemapIndexUrl = `${baseUrl}/sitemap_index.xml`
@@ -76,13 +76,13 @@ export class ScannerService {
 
       const text = await response.text()
 
-      // Используем regex для парсинга XML (DOMParser недоступен в Service Worker)
+      // Використовуємо regex для парсингу XML (DOMParser недоступний у Service Worker)
       const sitemapLocRegex = /<sitemap>[\s\S]*?<loc>(.*?)<\/loc>[\s\S]*?<\/sitemap>/gi
       const matches = [...text.matchAll(sitemapLocRegex)]
 
       if (matches.length === 0) return []
 
-      // Параллельно сканируем все найденные sitemap
+      // Паралельно скануємо всі знайдені sitemap
       const sitemapPromises = matches.map(match =>
         this.scanSitemapUrl(match[1].trim())
       )
@@ -102,9 +102,9 @@ export class ScannerService {
   }
 
   /**
-   * Парсит sitemap.xml
-   * @param {string} baseUrl - Базовый URL сайта
-   * @returns {Promise<Array>} - Массив ссылок
+   * Парсить sitemap.xml
+   * @param {string} baseUrl - Базовий URL сайту
+   * @returns {Promise<Array>} - Масив посилань
    */
   async scanSitemap(baseUrl) {
     const sitemapUrl = `${baseUrl}/sitemap.xml`
@@ -112,9 +112,9 @@ export class ScannerService {
   }
 
   /**
-   * Парсит конкретный sitemap URL
+   * Парсить конкретний sitemap URL
    * @param {string} sitemapUrl - URL sitemap
-   * @returns {Promise<Array>} - Массив ссылок
+   * @returns {Promise<Array>} - Масив посилань
    */
   async scanSitemapUrl(sitemapUrl) {
     const links = []
@@ -125,8 +125,8 @@ export class ScannerService {
 
       const text = await response.text()
 
-      // Используем regex для парсинга XML (DOMParser недоступен в Service Worker)
-      // Ищем все <url><loc> теги
+      // Використовуємо regex для парсингу XML (DOMParser недоступний у Service Worker)
+      // Шукаємо всі теги <url><loc>
       const urlLocRegex = /<url>[\s\S]*?<loc>(.*?)<\/loc>[\s\S]*?<\/url>/gi
       const urlMatches = [...text.matchAll(urlLocRegex)]
 
@@ -137,12 +137,12 @@ export class ScannerService {
         }
       }
 
-      // Также проверяем, не является ли это sitemap index
+      // Також перевіряємо, чи це не sitemap index
       const sitemapLocRegex = /<sitemap>[\s\S]*?<loc>(.*?)<\/loc>[\s\S]*?<\/sitemap>/gi
       const sitemapMatches = [...text.matchAll(sitemapLocRegex)]
 
       if (sitemapMatches.length > 0) {
-        // Рекурсивно сканируем вложенные sitemap
+        // Рекурсивно скануємо вкладені sitemap
         const sitemapPromises = sitemapMatches.map(match =>
           this.scanSitemapUrl(match[1].trim())
         )
@@ -163,9 +163,9 @@ export class ScannerService {
   }
 
   /**
-   * Парсит robots.txt
-   * @param {string} baseUrl - Базовый URL сайта
-   * @returns {Promise<Array>} - Массив ссылок из robots.txt
+   * Парсить robots.txt
+   * @param {string} baseUrl - Базовий URL сайту
+   * @returns {Promise<Array>} - Масив посилань з robots.txt
    */
   async scanRobotsTxt(baseUrl) {
     const robotsUrl = `${baseUrl}/robots.txt`
@@ -178,13 +178,13 @@ export class ScannerService {
       const text = await response.text()
       const lines = text.split('\n')
 
-      // Собираем все sitemap URL для параллельной обработки
+      // Збираємо всі sitemap URL для паралельної обробки
       const sitemapUrls = []
 
       for (const line of lines) {
         const trimmed = line.trim()
 
-        // Ищем Sitemap: директивы
+        // Шукаємо директиви Sitemap:
         if (trimmed.toLowerCase().startsWith('sitemap:')) {
           const sitemapUrl = trimmed.substring(8).trim()
           if (sitemapUrl) {
@@ -192,7 +192,7 @@ export class ScannerService {
           }
         }
 
-        // Ищем Allow: директивы (могут содержать интересные URL)
+        // Шукаємо директиви Allow: (можуть містити цікаві URL)
         if (trimmed.toLowerCase().startsWith('allow:')) {
           const allowedPath = trimmed.substring(6).trim()
           if (allowedPath && allowedPath !== '/') {
@@ -201,18 +201,18 @@ export class ScannerService {
           }
         }
 
-        // Ищем Disallow: директивы (запрещенные страницы)
+        // Шукаємо директиви Disallow: (заборонені сторінки)
         if (trimmed.toLowerCase().startsWith('disallow:')) {
           const disallowedPath = trimmed.substring(9).trim()
           if (disallowedPath && disallowedPath !== '/' && disallowedPath !== '') {
             const fullUrl = normalizeUrl(disallowedPath, baseUrl)
-            // Помечаем как disallowed для специальной категории
+            // Позначаємо як disallowed для спеціальної категорії
             links.push(`[DISALLOW]${fullUrl}`)
           }
         }
       }
 
-      // Обрабатываем все sitemap параллельно
+      // Обробляємо всі sitemap паралельно
       if (sitemapUrls.length > 0) {
         console.log(`Found ${sitemapUrls.length} sitemap(s) in robots.txt:`, sitemapUrls)
         const sitemapPromises = sitemapUrls.map(url => this.scanSitemapUrl(url))
@@ -232,9 +232,9 @@ export class ScannerService {
   }
 
   /**
-   * Сканирует альтернативные пути sitemap
-   * @param {string} baseUrl - Базовый URL сайта
-   * @returns {Promise<Array>} - Массив ссылок
+   * Сканує альтернативні шляхи sitemap
+   * @param {string} baseUrl - Базовий URL сайту
+   * @returns {Promise<Array>} - Масив посилань
    */
   async scanAlternativeSitemaps(baseUrl) {
     const alternativePaths = [
@@ -251,7 +251,7 @@ export class ScannerService {
 
     const links = []
 
-    // Пробуем все альтернативные пути параллельно
+    // Пробуємо всі альтернативні шляхи паралельно
     const promises = alternativePaths.map(path =>
       this.scanSitemapUrl(`${baseUrl}${path}`)
     )
@@ -268,9 +268,9 @@ export class ScannerService {
   }
 
   /**
-   * Fetch с таймаутом
-   * @param {string} url - URL для запроса
-   * @returns {Promise<Response>} - Response объект
+   * Fetch із таймаутом
+   * @param {string} url - URL для запиту
+   * @returns {Promise<Response>} - Об'єкт Response
    */
   async fetchWithTimeout(url) {
     const controller = new AbortController()
@@ -290,16 +290,16 @@ export class ScannerService {
   }
 
   /**
-   * Получает прогресс сканирования (для UI)
-   * @returns {Object} - Объект с информацией о прогрессе
+   * Отримує прогрес сканування (для UI)
+   * @returns {Object} - Об'єкт з інформацією про прогрес
    */
   getProgress() {
     return {
       status: 'scanning',
-      message: 'Сканирование сайта...'
+      message: 'Сканування сайту...'
     }
   }
 }
 
-// Экспортируем singleton instance
+// Експортуємо singleton instance
 export default new ScannerService()

@@ -4,8 +4,12 @@
   "version": "1.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "TARGET_BROWSER=chrome vite",
+    "dev:chrome": "TARGET_BROWSER=chrome vite",
+    "dev:firefox": "TARGET_BROWSER=firefox vite",
+    "build": "tsc && TARGET_BROWSER=chrome vite build",
+    "build:chrome": "tsc && TARGET_BROWSER=chrome vite build",
+    "build:firefox": "tsc && TARGET_BROWSER=firefox vite build",
     "preview": "vite preview"
   },
   "devDependencies": {

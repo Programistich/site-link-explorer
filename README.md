@@ -1,156 +1,74 @@
 # Site Link Explorer
 
-Chrome расширение для поиска интересных ссылок на сайтах через sitemap.xml, robots.txt и другие публичные источники.
+Site Link Explorer is a cross-browser WebExtension for Chrome and Firefox that discovers useful public links on a website. It scans sources such as `sitemap.xml`, `robots.txt`, and common sitemap variations, then groups results in a simple popup UI.
 
-## Возможности
+## Features
 
-- 🔍 **Автоматическое сканирование** - находит ссылки при загрузке страницы
-- 📊 **Группировка по категориям** - конверсионные, партнерские, административные, API и прочие
-- 🔎 **Поиск и фильтрация** - быстро находите нужные ссылки
-- 📥 **Экспорт данных** - сохраняйте результаты в CSV или JSON
-- ⚙️ **Настраиваемые паттерны** - добавляйте свои ключевые слова для поиска
-- ✨ **Свои категории** - создавайте собственные категории со своими паттернами
-- 💡 **Примеры паттернов** - готовые примеры для каждой категории
-- 📜 **История сканирований** - отслеживайте предыдущие результаты
-- 🌓 **Светлая/темная тема** - адаптивный дизайн под ваши предпочтения
+- Automatic link discovery on page load
+- Link grouping by category
+- Search and filtering
+- CSV and JSON export
+- Custom patterns and user-defined categories
+- Scan history
+- Light and dark themes
 
-## Категории ссылок
+## Common Categories
 
-1. **💰 Конверсионные страницы** - success, thank-you, checkout, cart, order, purchase
-2. **🤝 Партнерские программы** - affiliate, partner, referral
-3. **🔐 Административные** - admin, dashboard, login, wp-admin
-4. **📡 API и документация** - api, docs, swagger, graphql
-5. **🚫 Запрещенные (Disallow)** - страницы из robots.txt Disallow директив
-6. **👤 Пользовательские** - signup, register, account, profile
-7. **📧 Контакты** - contact, support, help, about
-8. **⚖️ Юридические** - privacy, terms, legal, gdpr
-9. **📝 Блог и контент** - blog, news, articles, posts
-10. **💾 Файлы и ресурсы** - PDF, ZIP, downloads
-11. **🔧 Служебные** - search, sitemap, rss, feed
-12. **📄 Прочие ссылки** - все остальные найденные ссылки
+- Conversion pages
+- Affiliate and partner pages
+- Admin and login pages
+- API and docs pages
+- User account pages
+- Contact and legal pages
+- Blog, content, and downloadable files
 
-**✨ Свои категории** - создавайте собственные категории через настройки!
+## Development
 
-## Установка для разработки
+Requirements:
 
-### Требования
 - Node.js 18+
 - pnpm
 
-### Шаги установки
+Install and run:
 
-1. Клонируйте репозиторий или перейдите в папку проекта:
-```bash
-cd site-link-explorer
-```
-
-2. Установите зависимости:
 ```bash
 pnpm install
+pnpm dev:chrome
+# or
+pnpm dev:firefox
 ```
 
-3. Запустите dev сервер:
-```bash
-pnpm dev
-```
+Load the extension manually:
 
-4. Откройте Chrome и перейдите в `chrome://extensions/`
+- Chrome: open `chrome://extensions`, enable Developer mode, and load `dist/chrome`
+- Firefox: open `about:debugging#/runtime/this-firefox` and load `dist/firefox/manifest.json`
 
-5. Включите "Режим разработчика" (Developer mode) в правом верхнем углу
-
-6. Нажмите "Загрузить распакованное расширение" (Load unpacked)
-
-7. Выберите папку `dist` в корне проекта
-
-## Сборка для production
+## Build
 
 ```bash
-pnpm build
+pnpm build:chrome
+pnpm build:firefox
 ```
 
-Собранное расширение будет находиться в папке `dist/`.
+Default build output:
 
-## Использование
+- `dist/chrome`
+- `dist/firefox`
 
-1. **Автоматическое сканирование**: При загрузке любой страницы расширение автоматически ищет ссылки (если включено в настройках)
+You can override the Firefox add-on ID if needed:
 
-2. **Просмотр результатов**: Кликните на иконку расширения в панели инструментов
-
-3. **Поиск**: Используйте поле поиска для фильтрации ссылок
-
-4. **Фильтрация по категориям**: Выберите категорию для просмотра только определенных типов ссылок
-
-5. **Экспорт**: Используйте кнопки CSV/JSON для сохранения результатов
-
-6. **Настройки**: Откройте страницу настроек через иконку ⚙️ для:
-   - Включения/выключения автосканирования
-   - Изменения темы оформления
-   - Добавления пользовательских паттернов
-   - Управления историей и кешем
-
-## Источники данных
-
-Расширение ищет ссылки в следующих местах:
-
-- `/sitemap.xml` - основной sitemap
-- `/sitemap_index.xml` - индексный sitemap
-- `/robots.txt` - директивы Sitemap и Allow
-- Альтернативные пути sitemap:
-  - `/post-sitemap.xml`
-  - `/page-sitemap.xml`
-  - `/product-sitemap.xml`
-  - `/wp-sitemap.xml`
-  - и другие
-
-## Технологии
-
-- **Vue 3** - реактивный UI фреймворк
-- **Vite** - быстрая сборка и hot reload
-- **Pinia** - управление состоянием
-- **@crxjs/vite-plugin** - плагин для разработки Chrome расширений
-- **Chrome Extension Manifest V3** - современный API расширений
-
-## Структура проекта
-
-```
-site-link-explorer/
-├── public/
-│   └── icons/              # Иконки расширения
-├── src/
-│   ├── background/         # Service Worker
-│   ├── popup/              # Popup UI (Vue)
-│   ├── options/            # Страница настроек (Vue)
-│   ├── services/           # Бизнес-логика
-│   │   ├── scanner.js      # Сканирование сайтов
-│   │   └── storage.js      # Работа с Chrome Storage
-│   ├── stores/             # Pinia stores
-│   ├── utils/              # Утилиты и паттерны
-│   └── manifest.json       # Манифест расширения
-├── vite.config.js          # Конфигурация Vite
-└── package.json
-```
-
-## Разработка
-
-### Dev сервер с hot reload
 ```bash
-pnpm dev
+FIREFOX_EXTENSION_ID=my-extension@example.com pnpm build:firefox
 ```
 
-### Сборка production
-```bash
-pnpm build
-```
+## Usage
 
-### Preview production build
-```bash
-pnpm preview
-```
+Open any website, let the extension scan public sources, then open the popup to review, search, filter, and export discovered links. Settings allow you to enable or disable auto-scan, change theme, manage custom patterns, and clear history or cache.
 
-## Лицензия
+## Tech Stack
 
-MIT
-
-## Автор
-
-Создано с помощью Claude Code
+- Vue 3
+- Vite
+- Pinia
+- `@crxjs/vite-plugin`
+- Manifest V3

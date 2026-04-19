@@ -2,84 +2,102 @@ import { ScannerService } from '../services/scanner.js'
 import { saveScanResults, getScanResults, getUserSettings, extractDomain, getCustomPatterns, getCategoryOrder } from '../services/storage.js'
 import { groupLinksByCategory } from '../utils/patterns.js'
 
-// Инициализация service worker
+// Ініціалізація service worker
 console.log('Site Link Explorer: Service Worker loaded')
 
-// Слушаем события установки расширения
+function isScannableUrl(url) {
+  if (!url) return false
+
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+// Слухаємо події встановлення розширення
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Site Link Explorer: Extension installed')
 
-  // Устанавливаем начальные значения badge
+  // Встановлюємо початкові значення badge
   chrome.action.setBadgeBackgroundColor({ color: '#4285F4' })
 })
 
-// Слушаем обновления вкладок
+// Слухаємо оновлення вкладок
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  // Проверяем, завершена ли загрузка страницы
-  if (changeInfo.status === 'complete' && tab.url) {
-    // Получаем настройки
+  // Перевіряємо, чи завершене завантаження сторінки
+  if (changeInfo.status === 'complete') {
+    if (!isScannableUrl(tab.url)) {
+      chrome.action.setBadgeText({ text: '', tabId })
+      return
+    }
+
+    // Отримуємо налаштування
     const settings = await getUserSettings()
 
-    // Если включено автосканирование, запускаем сканирование
+    // Якщо ввімкнене автосканування, запускаємо сканування
     if (settings.autoScan) {
       await scanTab(tab)
     } else {
-      // Иначе просто сбрасываем badge
+      // Інакше просто скидаємо badge
       chrome.action.setBadgeText({ text: '', tabId })
     }
   }
 })
 
-// Слушаем переключение между вкладками
+// Слухаємо перемикання між вкладками
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   const tab = await chrome.tabs.get(activeInfo.tabId)
-  if (tab.url) {
+  if (isScannableUrl(tab.url)) {
     const domain = extractDomain(tab.url)
     const cached = await getScanResults(domain)
 
     if (cached) {
-      // Если есть кешированные данные, обновляем badge
+      // Якщо є кешовані дані, оновлюємо badge
       updateBadge(activeInfo.tabId, cached.totalCount)
     } else {
       chrome.action.setBadgeText({ text: '', tabId: activeInfo.tabId })
     }
+  } else {
+    chrome.action.setBadgeText({ text: '', tabId: activeInfo.tabId })
   }
 })
 
-// Слушаем сообщения от popup и других частей расширения
+// Слухаємо повідомлення від popup та інших частин розширення
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'scan') {
-    // Запускаем сканирование вручную
+    // Запускаємо сканування вручну
     handleScanRequest(message.url).then(sendResponse)
-    return true // Асинхронный ответ
+    return true // Асинхронна відповідь
   }
 
   if (message.action === 'getResults') {
-    // Получаем результаты сканирования
+    // Отримуємо результати сканування
     handleGetResults(message.domain).then(sendResponse)
     return true
   }
 
   if (message.action === 'updateBadge') {
-    // Обновляем badge
+    // Оновлюємо badge
     updateBadge(sender.tab?.id, message.count)
     sendResponse({ success: true })
   }
 
   if (message.action === 'recategorize') {
-    // Пересканируем текущую вкладку после изменения категорий
+    // Перескановуємо поточну вкладку після зміни категорій
     handleRecategorize().then(sendResponse)
     return true
   }
 })
 
-// Слушаем изменения в хранилище (когда меняются категории/паттерны)
+// Слухаємо зміни у сховищі (коли змінюються категорії/патерни)
 chrome.storage.onChanged.addListener(async (changes, areaName) => {
   if (areaName === 'local' && changes.custom_patterns) {
-    // Пересканируем текущую активную вкладку
+    // Перескановуємо поточну активну вкладку
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-      if (tab && tab.url) {
+      if (tab && isScannableUrl(tab.url)) {
         await scanTab(tab)
       }
     } catch (error) {
@@ -89,30 +107,30 @@ chrome.storage.onChanged.addListener(async (changes, areaName) => {
 })
 
 /**
- * Сканирует вкладку
- * @param {Object} tab - Объект вкладки Chrome
+ * Сканує вкладку
+ * @param {Object} tab - Об'єкт вкладки Chrome
  */
 async function scanTab(tab) {
-  if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+  if (!isScannableUrl(tab.url)) {
     return
   }
 
   try {
     const domain = extractDomain(tab.url)
 
-    // Проверяем, есть ли кешированные результаты
+    // Перевіряємо, чи є кешовані результати
     const cached = await getScanResults(domain)
 
-    // Если кеш свежий (менее 1 часа), используем его
+    // Якщо кеш свіжий (менше 1 години), використовуємо його
     if (cached && (Date.now() - cached.timestamp) < 3600000) {
       updateBadge(tab.id, cached.totalCount)
       return
     }
 
-    // Иначе запускаем новое сканирование
+    // Інакше запускаємо нове сканування
     updateBadge(tab.id, '⋯')
 
-    // Загружаем пользовательские паттерны и категории
+    // Завантажуємо користувацькі патерни та категорії
     const customData = await getCustomPatterns()
     const categoryOrder = await getCategoryOrder()
 
@@ -126,10 +144,10 @@ async function scanTab(tab) {
       customData.removedDefaults || {}
     )
 
-    // Сохраняем результаты
+    // Зберігаємо результати
     await saveScanResults(domain, links, grouped)
 
-    // Обновляем badge
+    // Оновлюємо badge
     updateBadge(tab.id, links.length)
   } catch (error) {
     console.error('Error scanning tab:', error)
@@ -138,19 +156,19 @@ async function scanTab(tab) {
 }
 
 /**
- * Обрабатывает запрос на сканирование
- * @param {string} url - URL для сканирования
- * @returns {Promise<Object>} - Результаты сканирования
+ * Обробляє запит на сканування
+ * @param {string} url - URL для сканування
+ * @returns {Promise<Object>} - Результати сканування
  */
 async function handleScanRequest(url) {
   try {
     const domain = extractDomain(url)
 
-    // Загружаем пользовательские паттерны и категории
+    // Завантажуємо користувацькі патерни та категорії
     const customData = await getCustomPatterns()
     const categoryOrder = await getCategoryOrder()
 
-    // Запускаем сканирование
+    // Запускаємо сканування
     const scanner = new ScannerService()
     const links = await scanner.scanSite(url)
     const grouped = groupLinksByCategory(
@@ -161,7 +179,7 @@ async function handleScanRequest(url) {
       customData.removedDefaults || {}
     )
 
-    // Сохраняем результаты
+    // Зберігаємо результати
     await saveScanResults(domain, links, grouped)
 
     return {
@@ -183,9 +201,9 @@ async function handleScanRequest(url) {
 }
 
 /**
- * Обрабатывает запрос на получение результатов
+ * Обробляє запит на отримання результатів
  * @param {string} domain - Домен
- * @returns {Promise<Object>} - Результаты сканирования
+ * @returns {Promise<Object>} - Результати сканування
  */
 async function handleGetResults(domain) {
   try {
@@ -212,9 +230,9 @@ async function handleGetResults(domain) {
 }
 
 /**
- * Обновляет badge на иконке расширения
+ * Оновлює badge на іконці розширення
  * @param {number} tabId - ID вкладки
- * @param {number|string} count - Количество ссылок или текст
+ * @param {number|string} count - Кількість посилань або текст
  */
 function updateBadge(tabId, count) {
   if (tabId) {
@@ -224,7 +242,7 @@ function updateBadge(tabId, count) {
 
     chrome.action.setBadgeText({ text, tabId })
 
-    // Меняем цвет в зависимости от статуса
+    // Змінюємо колір залежно від статусу
     if (count === '!') {
       chrome.action.setBadgeBackgroundColor({ color: '#EA4335', tabId })
     } else if (count === '⋯') {

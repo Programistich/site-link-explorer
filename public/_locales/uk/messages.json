@@ -1,0 +1,245 @@
+{
+  "extName": {
+    "message": "Site Link Explorer"
+  },
+  "extDescription": {
+    "message": "Скануйте та категоризуйте посилання сайту із sitemap.xml, robots.txt та інших публічних джерел. Знаходьте приховані сторінки та API миттєво."
+  },
+  "scanButton": {
+    "message": "Сканувати посилання"
+  },
+  "scanResults": {
+    "message": "Результати сканування"
+  },
+  "totalLinks": {
+    "message": "Усього посилань"
+  },
+  "noLinksFound": {
+    "message": "На цій сторінці не знайдено посилань."
+  },
+  "links": {
+    "message": "Посилання"
+  },
+  "categoryConversion": {
+    "message": "Конверсія"
+  },
+  "categoryPartner": {
+    "message": "Партнерські"
+  },
+  "categoryAdmin": {
+    "message": "Адмін"
+  },
+  "categoryApi": {
+    "message": "API"
+  },
+  "categoryDisallowed": {
+    "message": "Заборонені"
+  },
+  "categoryUser": {
+    "message": "Користувацькі"
+  },
+  "categoryContact": {
+    "message": "Контакти"
+  },
+  "categoryLegal": {
+    "message": "Юридичні"
+  },
+  "categoryContent": {
+    "message": "Контент"
+  },
+  "categoryFiles": {
+    "message": "Файли"
+  },
+  "categoryService": {
+    "message": "Службові"
+  },
+  "categoryOther": {
+    "message": "Інше"
+  },
+  "settings": {
+    "message": "Налаштування"
+  },
+  "generalSettings": {
+    "message": "Загальні налаштування"
+  },
+  "autoScan": {
+    "message": "Автосканування"
+  },
+  "autoScanDesc": {
+    "message": "Автоматично сканувати сторінки під час завантаження."
+  },
+  "language": {
+    "message": "Мова"
+  },
+  "languageDesc": {
+    "message": "Оберіть мову інтерфейсу."
+  },
+  "theme": {
+    "message": "Тема"
+  },
+  "themeDesc": {
+    "message": "Оберіть тему інтерфейсу."
+  },
+  "themeLight": {
+    "message": "Світла"
+  },
+  "themeDark": {
+    "message": "Темна"
+  },
+  "themeAuto": {
+    "message": "Авто"
+  },
+  "categoriesAndPatterns": {
+    "message": "Категорії та патерни"
+  },
+  "categoriesAndPatternsDesc": {
+    "message": "Керуйте категоріями посилань і власними патернами."
+  },
+  "rename": {
+    "message": "Перейменувати"
+  },
+  "save": {
+    "message": "Зберегти"
+  },
+  "delete": {
+    "message": "Видалити"
+  },
+  "hide": {
+    "message": "Приховати"
+  },
+  "moveUp": {
+    "message": "Перемістити вгору"
+  },
+  "moveDown": {
+    "message": "Перемістити вниз"
+  },
+  "examples": {
+    "message": "Приклади"
+  },
+  "addPattern": {
+    "message": "Додати патерн"
+  },
+  "hideDefaultPatterns": {
+    "message": "Приховати стандартні патерни"
+  },
+  "showDefaultPatterns": {
+    "message": "Показати стандартні патерни"
+  },
+  "standardPatterns": {
+    "message": "Стандартні патерни"
+  },
+  "hidePattern": {
+    "message": "Приховати патерн"
+  },
+  "yourPatterns": {
+    "message": "Ваші патерни"
+  },
+  "hiddenCategories": {
+    "message": "Приховані категорії"
+  },
+  "restore": {
+    "message": "Відновити"
+  },
+  "createNewCategory": {
+    "message": "Створити нову категорію"
+  },
+  "categoryNamePlaceholder": {
+    "message": "Назва категорії"
+  },
+  "iconPlaceholder": {
+    "message": "Іконка"
+  },
+  "createCategory": {
+    "message": "Створити категорію"
+  },
+  "resetOrder": {
+    "message": "Скинути порядок"
+  },
+  "scanHistory": {
+    "message": "Історія сканувань"
+  },
+  "scanHistoryDesc": {
+    "message": "Історія ваших нещодавніх сканувань."
+  },
+  "historyItems": {
+    "message": "Записів в історії"
+  },
+  "memoryUsed": {
+    "message": "Використано пам'яті"
+  },
+  "linksCount": {
+    "message": "посилань"
+  },
+  "clearHistory": {
+    "message": "Очистити історію"
+  },
+  "clearCache": {
+    "message": "Очистити кеш"
+  },
+  "settingsSaved": {
+    "message": "Налаштування успішно збережено!"
+  },
+  "languageChanged": {
+    "message": "Мову успішно змінено!"
+  },
+  "patternRemoved": {
+    "message": "Патерн видалено."
+  },
+  "patternAdded": {
+    "message": "Патерн додано."
+  },
+  "patternHidden": {
+    "message": "Патерн приховано."
+  },
+  "enterCategoryName": {
+    "message": "Будь ласка, введіть назву категорії."
+  },
+  "categoryCreated": {
+    "message": "Категорію створено."
+  },
+  "confirmDeleteCategory": {
+    "message": "Ви впевнені, що хочете видалити цю категорію?"
+  },
+  "categoryDeleted": {
+    "message": "Категорію видалено."
+  },
+  "confirmClearHistory": {
+    "message": "Ви впевнені, що хочете очистити історію сканувань?"
+  },
+  "historyCleared": {
+    "message": "Історію очищено."
+  },
+  "confirmClearCache": {
+    "message": "Ви впевнені, що хочете очистити кеш?"
+  },
+  "cacheCleared": {
+    "message": "Кеш очищено."
+  },
+  "nameChanged": {
+    "message": "Назву змінено."
+  },
+  "deleteCategoryConfirm": {
+    "message": "Ви впевнені, що хочете видалити цю категорію?"
+  },
+  "categoryHidden": {
+    "message": "Категорію приховано."
+  },
+  "categoryRestored": {
+    "message": "Категорію відновлено."
+  },
+  "orderChanged": {
+    "message": "Порядок змінено."
+  },
+  "orderReset": {
+    "message": "Порядок скинуто до стандартного."
+  },
+  "settingsTitle": {
+    "message": "Налаштування Site Link Explorer"
+  },
+  "maxHistoryItemsLabel": {
+    "message": "Максимум записів в історії"
+  },
+  "maxHistoryItemsDesc": {
+    "message": "Кількість записів історії сканувань, які зберігаються."
+  }
+}
