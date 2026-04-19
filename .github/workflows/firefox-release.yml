@@ -105,12 +105,53 @@ jobs:
 
           echo "asset_path=${asset_name}" >> "$GITHUB_OUTPUT"
 
+      - name: Sign XPI with AMO
+        id: sign
+        shell: bash
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${AMO_JWT_ISSUER:-}" ]]; then
+            echo "Missing required secret: AMO_JWT_ISSUER" >&2
+            exit 1
+          fi
+
+          if [[ -z "${AMO_JWT_SECRET:-}" ]]; then
+            echo "Missing required secret: AMO_JWT_SECRET" >&2
+            exit 1
+          fi
+
+          rm -rf web-ext-artifacts
+
+          pnpm dlx web-ext sign \
+            --channel=listed \
+            --source-dir=dist/firefox \
+            --artifacts-dir=web-ext-artifacts \
+            --api-key="${AMO_JWT_ISSUER}" \
+            --api-secret="${AMO_JWT_SECRET}" \
+            --no-input
+
+          signed_xpi="$(find web-ext-artifacts -maxdepth 1 -type f -name '*.xpi' | sort | tail -n1)"
+          if [[ -z "${signed_xpi}" ]]; then
+            echo "web-ext did not produce a signed XPI." >&2
+            exit 1
+          fi
+
+          asset_name="${{ steps.tag.outputs.asset_name }}"
+          signed_asset_path="web-ext-artifacts/${asset_name}"
+          mv "${signed_xpi}" "${signed_asset_path}"
+
+          echo "asset_path=${signed_asset_path}" >> "$GITHUB_OUTPUT"
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Firefox ${{ steps.tag.outputs.tag }}
-          files: ${{ steps.package.outputs.asset_path }}
+          files: ${{ steps.sign.outputs.asset_path }}
           fail_on_unmatched_files: true
           overwrite_files: true
           generate_release_notes: false
