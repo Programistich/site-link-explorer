@@ -1,0 +1,119 @@
+name: Firefox Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+concurrency:
+  group: firefox-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve build tag
+        id: tag
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch --tags --force
+
+          existing_tag="$(git tag --points-at "$GITHUB_SHA" | grep -E '^build-[0-9]+$' | sort -V | tail -n1 || true)"
+          if [[ -n "${existing_tag}" ]]; then
+            tag="${existing_tag}"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            tag=""
+            for attempt in $(seq 1 20); do
+              git fetch --tags --force
+
+              latest_number="$(git tag -l 'build-*' | sed -nE 's/^build-([0-9]+)$/\1/p' | sort -n | tail -n1)"
+              if [[ -z "${latest_number}" ]]; then
+                next_number=1
+              else
+                next_number=$((latest_number + 1))
+              fi
+
+              candidate="build-${next_number}"
+
+              if git show-ref --tags --verify --quiet "refs/tags/${candidate}"; then
+                continue
+              fi
+
+              git tag "${candidate}" "${GITHUB_SHA}"
+              if git push origin "refs/tags/${candidate}"; then
+                tag="${candidate}"
+                break
+              fi
+
+              git tag -d "${candidate}" || true
+            done
+
+            if [[ -z "${tag}" ]]; then
+              echo "Failed to create a unique build tag after multiple attempts." >&2
+              exit 1
+            fi
+          fi
+
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "asset_name=site-link-explorer-${tag}.xpi" >> "$GITHUB_OUTPUT"
+
+      - name: Build Firefox extension
+        run: pnpm run build:firefox
+
+      - name: Package XPI
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          asset_name="${{ steps.tag.outputs.asset_name }}"
+          rm -f "${asset_name}"
+
+          (
+            cd dist/firefox
+            zip -r "../../${asset_name}" . -x "*.DS_Store"
+          )
+
+          echo "asset_path=${asset_name}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Firefox ${{ steps.tag.outputs.tag }}
+          files: ${{ steps.package.outputs.asset_path }}
+          fail_on_unmatched_files: true
+          overwrite_files: true
+          generate_release_notes: false
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
