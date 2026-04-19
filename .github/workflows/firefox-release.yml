@@ -127,7 +127,7 @@ jobs:
           rm -rf web-ext-artifacts
 
           pnpm dlx web-ext sign \
-            --channel=listed \
+            --channel=unlisted \
             --source-dir=dist/firefox \
             --artifacts-dir=web-ext-artifacts \
             --api-key="${AMO_JWT_ISSUER}" \
